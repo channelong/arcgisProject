@@ -1,0 +1,37 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Add GeoJSON and Display Multiple Popup</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=7,IE=9">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+
+    <link rel="stylesheet" href="http://js.arcgis.com/3.13/esri/css/esri.css">
+    <link rel="stylesheet" href="http://js.arcgis.com/3.13/dijit/themes/claro/claro.css">
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="ncam/PopupExtended.css" rel="stylesheet" />
+
+    <script src="http://js.arcgis.com/3.10"></script>
+    <script src="terraformer/terraformer.min.js"></script>
+    <script src="terraformer-arcgis-parser/terraformer-arcgis-parser.min.js"></script>
+    <script src="jquery.min.js"></script>
+    <script>
+        var dojoConfig = {
+            parseOnLoad: false,
+            async: true,
+            tlmSiblingOfDojo: false,
+            packages: [{
+                name: "ncam",
+                location: location.pathname.replace(/\/[^/]+$/, '') + "ncam"
+            }]
+        };
+    </script>
+
+ 
+</head>
+<body>
+     <div id="mapDiv"></div>
+     <button type="line" id="shanghaiPoint" class="btn btn-default buttonRight" style="top:20px;right:20px">上海区各点</button>
+     <button type="point" id="threeLine" class="btn btn-default buttonRight" style="top:70px;right:20px">三条航线</button>
+</body>
+</html>

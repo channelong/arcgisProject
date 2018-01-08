@@ -1,0 +1,244 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <link href="arcgis/dijit/themes/claro/claro.css" rel="stylesheet" />
+    <link href="arcgis/esri/css/esri.css" rel="stylesheet" />
+    <style>
+        html, body {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, Calibri;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+            position: relative;
+        }
+        /*=========================修改esri.css文件中样式==================================*/
+        .titlePane {
+            display: none;
+        }
+
+        .actionsPane {
+            display: none;
+        }
+
+        .attrName {
+            display: none;
+        }
+
+        .esriPopupWrapper {
+            width: 110px;
+        }
+
+        .esriViewPopup .mainSection .attrTable td {
+            padding: 0px;
+            color: red;
+        }
+
+        .esriPopup.light .contentPane, .esriPopup.dark .contentPane {
+            width: 90px;
+        }
+
+        .esriViewPopup .break {
+            display: none;
+        }
+    </style>
+    <!--<script>
+           dojoConfig = {
+               baseUrl: "arcgis/dojo",  //基础地址，通过这个地址加载其他需要的JS和CSS
+               packages: [{
+                   name: "arcgis",
+                   location: location.pathname.replace(/\/[^/]*$/, '') + '/arcgis'  //当前arcgis文件位于该html的相对位置
+               }]
+           }
+    </script>-->
+    <script src="arcgis/init.js"></script>
+
+</head>
+<body class="claro">
+    <div id="mapDiv" style="width:100%; height:600px; border:1px solid #000;"></div>
+</body>
+</html>
+<script>
+    var map, graphicsLayer, graphics, wmsLayer;
+    var coordinateList = [//119.358478,32.395555
+                { "name": "张三  21:33", "x": 119.39892384345973, "y": 32.37840594228827 },
+                { "name": "诸葛建宏 21:33", "x": 119.40806557522475, "y": 32.435045718728375 },
+                { "name": "李四  21:33", "x": 119.54069773159213, "y": 32.38386179180676 },
+                { "name": "王二麻  21:33", "x": 119.5280171467455, "y": 32.64661465603814 },
+                { "name": "王五儿  21:33", "x": 119.62246906164198, "y": 32.40125374453444 },
+                { "name": "扬州火车站 21:33", "x": 119.3464671872547, "y": 32.391773340031925 },
+    ];
+
+    require(["dojo/_base/lang", "esri/layers/ArcGISTiledMapServiceLayer", "dojo/dom", "dojo/dom-construct", "esri/map",
+    "esri/layers/GraphicsLayer", "esri/layers/FeatureLayer", "esri/graphic", "esri/geometry/Point", "esri/InfoTemplate",
+    "esri/dijit/PopupTemplate", "esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol", "esri/dijit/Popup",
+    "esri/dijit/PopupMobile", "esri/config", "esri/urlUtils", "esri/layers/WMTSLayer", "esri/layers/WMTSLayerInfo", "esri/layers/WMSLayer", "esri/geometry/Extent", "ncam/PopupExtended", "dojo/ready"], function (lang, ArcGISTiledMapServiceLayer, dom, domConstruct, Map, GraphicsLayer, FeatureLayer, Graphic, Point, InfoTemplate,
+        PopupTemplate, SimpleMarkerSymbol, SimpleLineSymbol, Popup, PopupMobile, esriConfig, urlUtils, WMTSLayer, WMTSLayerInfo, WMSLayer, Extent, PopupExtended, ready) {
+        map = new Map("mapDiv");
+
+        dojo.declare("WebTileLayer", esri.layers.TiledMapServiceLayer, {
+            _type: "",
+            constructor: function (type) {
+                this._type = type;
+                this.spatialReference = new esri.SpatialReference({ "wkid": 4326 });
+                this.initialExtent = (this.fullExtent = new esri.geometry.Extent(-180.0, -90.0, 180.0, 90.0, this.spatialReference));
+
+                this.tileInfo = new esri.layers.TileInfo({
+                    "rows": 256,
+                    "cols": 256,
+                    "compressionQuality": 0,
+                    "origin": { "x": -180, "y": 90 },
+                    "spatialReference": { "wkid": 4326 },
+                    "lods": [
+                                { "level": 2, "resolution": 0.3515625, "scale": 147748796.52937502 },
+                                { "level": 3, "resolution": 0.17578125, "scale": 73874398.264687508 },
+                                { "level": 4, "resolution": 0.087890625, "scale": 36937199.132343754 },
+                                { "level": 5, "resolution": 0.0439453125, "scale": 18468599.566171877 },
+                                { "level": 6, "resolution": 0.02197265625, "scale": 9234299.7830859385 },
+                                { "level": 7, "resolution": 0.010986328125, "scale": 4617149.8915429693 },
+                                { "level": 8, "resolution": 0.0054931640625, "scale": 2308574.9457714846 },
+                                { "level": 9, "resolution": 0.00274658203125, "scale": 1154287.4728857423 },
+                                { "level": 10, "resolution": 0.001373291015625, "scale": 577143.73644287116 },
+                                { "level": 11, "resolution": 0.0006866455078125, "scale": 288571.86822143558 },
+                                { "level": 12, "resolution": 0.00034332275390625, "scale": 144285.93411071779 },
+                                { "level": 13, "resolution": 0.000171661376953125, "scale": 72142.967055358895 },
+                                { "level": 14, "resolution": 8.58306884765625e-005, "scale": 36071.483527679447 },
+                                { "level": 15, "resolution": 4.291534423828125e-005, "scale": 18035.741763839724 },
+                                { "level": 16, "resolution": 2.1457672119140625e-005, "scale": 9017.8708819198619 },
+                                { "level": 17, "resolution": 1.0728836059570313e-005, "scale": 4508.9354409599309 },
+                                { "level": 18, "resolution": 5.3644180297851563e-006, "scale": 2254.4677204799655 }
+                    ]
+                });
+                this.loaded = true;
+                this.onLoad(this);
+            },
+            getTileUrl: function (level, row, col) {
+                if (this._type == null)
+                    return " http://t0.tianditu.com/vec_c/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=vec&STYLE=default&TILEMATRIXSET=c&TILEMATRIX=" + level + "&TILEROW=" + row + "&TILECOL=" + col + "&FORMAT=tiles";
+                else if (this._type == "ano")
+                    return " http://t0.tianditu.com/cva_c/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=cva&STYLE=default&TILEMATRIXSET=c&TILEMATRIX=" + level + "&TILEROW=" + row + "&TILECOL=" + col + "&FORMAT=tiles";
+            }
+        });
+        map.addLayer(new WebTileLayer());
+        map.addLayer(new WebTileLayer("ano"));
+
+        /*扬州地图加载*/
+        var basemap = new ArcGISTiledMapServiceLayer("http://61.177.187.244:8012/arcgis/rest/services/yzslnew/MapServer");
+        var dataLayer = new esri.layers.ArcGISTiledMapServiceLayer("http://61.177.187.244:8012/arcgis/rest/services/yzslzjnew/MapServer");
+        map.addLayer(basemap);
+        map.addLayer(dataLayer);
+
+        //创建图层
+        graphicsLayer = new GraphicsLayer();
+        //把图层添加到地图上
+        map.addLayer(graphicsLayer);
+
+        map.centerAndZoom(new esri.geometry.Point(119.48446812444834, 32.5125102991632, new esri.SpatialReference({ "wkid": 4326 })), 9);
+        setTimeout(function () {
+            if (map.loaded) {
+                var customGraphics = new esri.layers.GraphicsLayer();
+                var symbol = new esri.symbol.PictureMarkerSymbol("images/mark.png", 20, 20);
+                //提示框模板样式
+                var template = new PopupTemplate({
+                    //title: "{name}",
+                    fieldInfos: [
+                        { fieldName: "name", label: "name", visible: true }, //显示的数据
+                        { fieldName: "time", label: "time", visible: true }
+                    ],
+                    extended: {
+                        //themeClass: "extended", //使用第三方提示框的样式.PopupExtended.css
+                        scaleSelected: 1.0    //标注在加载后扩大的倍数
+                    }
+                });
+                //将提示框模板加载到图层
+                customGraphics.infoTemplate = template;
+                map.addLayer(customGraphics);  //将图层加载到地图上
+                //创建弹出层的功能.
+                var extendedPopup = new PopupExtended({
+                    extended: {
+                        themeClass: "light",
+                        draggable: false,
+                        defaultWidth: 0,
+                        hideOnOffClick: false,
+                        multiple: true,
+                        smallStyleWidthBreak: 1000,
+                    },
+                    highlight: false,
+                }, dojo.create("div"));
+                //将弹出层设置到地图上
+                extendedPopup.setMap(map);
+                map.infoWindow = extendedPopup;
+                var maxlng = 0, maxlat = 0, minlng = 0, minlat = 0, avelng = 0, avelat = 0;;
+                for (var i = 0, len = coordinateList.length; i < len; i++) {
+                    var d = coordinateList[i];
+                    if (i == 0) {
+                        maxlng = coordinateList[0].x;
+                        minlng = coordinateList[0].x;
+                        maxlat = coordinateList[0].y;
+                        minlat = coordinateList[0].y;
+                    }
+                    var p = new Point(d.x, d.y, new esri.SpatialReference({ "wkid": 4326 }));
+                    var graphic = new Graphic(p, symbol, lang.clone(d), null);
+                    customGraphics.add(graphic);
+                    avelng += d.x * Math.PI/180;
+                    avelat += d.y * Math.PI / 180;
+                    //获取最大 最小 经纬度
+                    maxlng = d.x > maxlng ? d.x : maxlng;
+                    minlng = d.x < minlng ? d.x : minlng;
+                    maxlat = d.y > maxlat ? d.y : maxlat;
+                    minlat = d.y < minlat ? d.y : minlat;
+                }
+                //avelng = avelng / coordinateList.length * 180 / Math.PI;
+                //avelat = avelat / coordinateList.length * 180 / Math.PI;
+                avelng = (parseFloat(maxlng) +parseFloat(minlng)) / 2;
+                avelat = (parseFloat(maxlat) + parseFloat(minlat)) / 2;
+                debugger;
+                var zoom = getZoom(maxlng,minlng,maxlat,minlat);
+
+                map.centerAndZoom(new esri.geometry.Point(avelng, avelat, new esri.SpatialReference({ "wkid": 4326 })), zoom);
+                ShowPopupMethods(customGraphics);
+            }
+        }, 1000);
+    })
+    //显示坐标提示信息  延迟500毫秒
+    function ShowPopupMethods(customGraphics) {
+        setTimeout(function () {
+            var len = customGraphics.graphics.length;
+            for (var j = 0; j < len; j++) {
+                var info = customGraphics.graphics[j];
+                var loc = map.toScreen(info.geometry);
+                map.infoWindow.setFeatures([info]);
+                map.infoWindow.show(loc);
+            }
+        }, 500);
+    }
+
+    //var zoom = getZoom(maxl, minl, maxb, minb);
+
+    //通过经纬度缩放级别
+    function getZoom(maxJ, minJ, maxW, minW) {
+        if (maxJ == minJ && maxW == minW) return 13;
+        var diff = maxJ - minJ;
+        if (diff < (maxW - minW) * 2.1) diff = (maxW - minW) * 2.1;
+        diff = parseInt(10000 * diff) / 10000;
+
+        var zoomArr = new Array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13);
+        var diffArr = new Array(180, 90, 45, 22, 11, 5.5, 2.75, 1.37, 0.68, 0.34, 0.17, 0.08, 0.04);
+
+        for (var i = 0; i < diffArr.length; i++) {
+            if ((diff - diffArr[i]) >= 0) {
+                return zoomArr[i-1];
+            }
+        }
+        return 14;
+    }
+</script>
+

@@ -1,0 +1,184 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <link href="arcgis/dijit/themes/claro/claro.css" rel="stylesheet" />
+    <link href="arcgis/esri/css/esri.css" rel="stylesheet" />
+    <style>
+        html, body {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, Calibri;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+            position: relative;
+        }
+        /*=========================修改esri.css文件中样式==================================*/
+        .titlePane {
+            display: none;
+        }
+
+        .actionsPane {
+            display: none;
+        }
+
+        .attrName {
+            display: none;
+        }
+
+        .esriPopupWrapper {
+            width: 160px;
+        }
+
+        .esriViewPopup .mainSection .attrTable td {
+            padding: 0px;
+            color: red;
+        }
+
+        .esriPopup.light .contentPane, .esriPopup.dark .contentPane {
+            padding: 4px;
+            width: 160px;
+        }
+
+        .esriViewPopup .break {
+            display: none;
+        }
+    </style>
+    <script src="arcgis/init.js"></script>
+</head>
+<body class="claro">
+    <div id="mapDiv" style="width:100%; height:600px; border:1px solid #000;"></div>
+</body>
+</html>
+<script>
+    var map, graphicsLayer, graphics, wmsLayer;
+
+    require(["esri/layers/ArcGISTiledMapServiceLayer", "esri/basemaps", "esri/map", "esri/geometry/Point"],
+        function (ArcGISTiledMapServiceLayer, basemaps, map, Point) {
+            basemaps.delorme = {
+                baseMapLayers: [
+                    {url:""}  //中国矢量地图
+                ],
+                title:"矢量图"
+            };
+            //初始化地图
+            map = new Map("mapDiv", {basemap:"delorme",logo:false});
+            map.centerAndZoom(new Point(120, 50));
+        
+            require(["dojo/_base/lang", "esri/layers/ArcGISTiledMapServiceLayer", "dojo/dom", "dojo/dom-construct", "esri/map",
+        "esri/layers/GraphicsLayer", "esri/layers/FeatureLayer", "esri/graphic", "esri/geometry/Point", "esri/InfoTemplate",
+        "esri/dijit/PopupTemplate", "esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol", "esri/dijit/Popup",
+        "esri/dijit/PopupMobile", "esri/config", "esri/urlUtils", "esri/layers/WMTSLayer", "esri/layers/WMTSLayerInfo", "esri/layers/WMSLayer", "esri/geometry/Extent", "ncam/PopupExtended", "dojo/ready"], function (lang, ArcGISTiledMapServiceLayer, dom, domConstruct, Map, GraphicsLayer, FeatureLayer, Graphic, Point, InfoTemplate,
+            PopupTemplate, SimpleMarkerSymbol, SimpleLineSymbol, Popup, PopupMobile ,esriConfig, urlUtils, WMTSLayer, WMTSLayerInfo, WMSLayer, Extent, PopupExtended, ready) {
+            //map = new Map("mapDiv");
+
+            var basemap = new ArcGISTiledMapServiceLayer("http://61.177.187.244:8012/arcgis/rest/services/yzslnew/MapServer");
+            var refLayer = new esri.layers.ArcGISTiledMapServiceLayer("http://61.177.187.244:8012/arcgis/rest/services/yzslzjnew/MapServer");
+            map.addLayer(basemap);
+            map.addLayer(refLayer);
+
+            //创建图层
+            graphicsLayer = new GraphicsLayer();
+            //把图层添加到地图上
+            map.addLayer(graphicsLayer);
+        });
+         /*
+        var coordinateList = [
+                    { "name": "张三 12-05 21:33", "x": 119.55513658215986, "y": 32.43069090761526 },
+                    { "name": "诸葛建宏 12-05 21:33", "x": 119.55524923493849, "y": 32.43108519234045 },
+                    { "name": "李四 12-05 21:33", "x": 119.55572130372511, "y": 32.43166052617414 },
+                    { "name": "李四 12-05 21:33", "x": 119.55572130372511, "y": 32.43166052617414 },
+                    { "name": "王二麻子 12-05 21:33", "x": 119.55685856034732, "y": 32.432293527501646 },
+                    { "name": "王五 12-05 21:33", "x": 119.5590150563954, "y": 32.4318697384773 }
+        ];
+            
+
+        require(["dojo/_base/lang", "esri/layers/ArcGISTiledMapServiceLayer", "dojo/dom", "dojo/dom-construct", "esri/map",
+        "esri/layers/GraphicsLayer", "esri/layers/FeatureLayer", "esri/graphic", "esri/geometry/Point", "esri/InfoTemplate",
+        "esri/dijit/PopupTemplate", "esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol", "esri/dijit/Popup",
+        "esri/dijit/PopupMobile", "esri/config", "esri/urlUtils", "esri/layers/WMTSLayer", "esri/layers/WMTSLayerInfo", "esri/layers/WMSLayer", "esri/geometry/Extent", "ncam/PopupExtended", "dojo/ready"], function (lang, ArcGISTiledMapServiceLayer, dom, domConstruct, Map, GraphicsLayer, FeatureLayer, Graphic, Point, InfoTemplate,
+            PopupTemplate, SimpleMarkerSymbol, SimpleLineSymbol, Popup, PopupMobile ,esriConfig, urlUtils, WMTSLayer, WMTSLayerInfo, WMSLayer, Extent, PopupExtended, ready) {
+            map = new Map("mapDiv");
+
+            var basemap = new ArcGISTiledMapServiceLayer("http://61.177.187.244:8012/arcgis/rest/services/yzslnew/MapServer");
+            var refLayer = new esri.layers.ArcGISTiledMapServiceLayer("http://61.177.187.244:8012/arcgis/rest/services/yzslzjnew/MapServer");
+            map.addLayer(basemap);
+            map.addLayer(refLayer);
+
+            //创建图层
+            graphicsLayer = new GraphicsLayer();
+            //把图层添加到地图上
+            map.addLayer(graphicsLayer);
+
+            /*
+            map.on("load", function () {
+                var customGraphics = new esri.layers.GraphicsLayer();
+                var symbol = new esri.symbol.PictureMarkerSymbol("images/mark.png", 20, 20);
+                //提示框模板样式
+                var template = new PopupTemplate({
+                    //title: "{name}",
+                    fieldInfos: [
+                        { fieldName: "name", label: "name", visible: true }, //显示的数据
+                        { fieldName: "time", label: "time", visible: true }
+                    ],
+                    extended: {
+                        //themeClass: "extended", //使用第三方提示框的样式.PopupExtended.css
+                        scaleSelected: 1.0    //标注在加载后扩大的倍数
+                    }
+                });
+                //将提示框模板加载到图层
+                customGraphics.infoTemplate = template;
+                map.addLayer(customGraphics);  //将图层加载到地图上
+    
+                //创建弹出层的功能.
+                var extendedPopup = new PopupExtended({
+                    extended: {
+                        themeClass: "light",
+                        draggable: false,
+                        defaultWidth: 0,
+                        hideOnOffClick: false,
+                        multiple: true,
+                        smallStyleWidthBreak: 1000,
+                    },
+                    highlight: false,
+                }, dojo.create("div"));
+    
+                //将弹出层设置到地图上
+                extendedPopup.setMap(map);
+                map.infoWindow = extendedPopup;
+    
+                for (var i = 0, len = coordinateList.length; i < len; i++) {
+                    var d = coordinateList[i];
+                    var p = new Point(d.x, d.y, new esri.SpatialReference({ "wkid": 4326 }));
+                    map.centerAndZoom(new esri.geometry.Point(d.x, d.y, map.spatialReference), 0);
+                    var graphic = new Graphic(p, symbol, lang.clone(d), null);
+                    customGraphics.add(graphic);
+                }
+                ShowPopupMethods(customGraphics);
+            });
+           
+        })
+    */
+        //显示坐标提示信息  延迟1000毫秒
+        function ShowPopupMethods(customGraphics) {
+            setTimeout(function () {
+                var len = customGraphics.graphics.length;
+                for (var j = 0; j < len; j++) {
+                    var info = customGraphics.graphics[j];
+                    var loc = map.toScreen(info.geometry);
+                    var x = info.geometry.x;
+                    var y = info.geometry.y;
+
+                    map.infoWindow.setFeatures([info]);
+                    map.infoWindow.show(loc);
+                }
+            }, 500)
+        }
+</script>MKLDD
