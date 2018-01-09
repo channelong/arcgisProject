@@ -67,16 +67,25 @@
 </body>
 </html>
 <script>
+    /*可能有样式上的冲突*/
     var map, graphicsLayer, graphics, wmsLayer;
-    var coordinateList = [//119.358478,32.395555
+    var coordinateList = [
                 { "name": "张三  21:33", "x": 119.39892384345973, "y": 32.37840594228827 },
                 { "name": "诸葛建宏 21:33", "x": 119.40806557522475, "y": 32.435045718728375 },
                 { "name": "李四  21:33", "x": 119.54069773159213, "y": 32.38386179180676 },
                 { "name": "王二麻  21:33", "x": 119.5280171467455, "y": 32.64661465603814 },
                 { "name": "王五儿  21:33", "x": 119.62246906164198, "y": 32.40125374453444 },
-                { "name": "扬州火车站 21:33", "x": 119.3464671872547, "y": 32.391773340031925 },
+                { "name": "扬州火车站 21:33", "x": 119.3464671872547, "y": 32.391773340031925 }
     ];
 
+    //var coordinateList = [
+    //    { "name": "张三  21:33", "lng": 119.39892384345973, "lat": 32.37840594228827 },
+    //    { "name": "诸葛建宏 21:33", "lng": 119.40806557522475, "lat": 32.435045718728375 },
+    //    { "name": "李四  21:33", "lng": 119.54069773159213, "lat": 32.38386179180676 },
+    //    { "name": "王二麻  21:33", "lng": 119.5280171467455, "lat": 32.64661465603814 },
+    //    { "name": "王五儿  21:33", "lng": 119.62246906164198, "lat": 32.40125374453444 },
+    //    { "name": "火车站 21:33", "lng": 119.3464671872547, "lat": 32.391773340031925 }
+    //];
     require(["dojo/_base/lang", "esri/layers/ArcGISTiledMapServiceLayer", "dojo/dom", "dojo/dom-construct", "esri/map",
     "esri/layers/GraphicsLayer", "esri/layers/FeatureLayer", "esri/graphic", "esri/geometry/Point", "esri/InfoTemplate",
     "esri/dijit/PopupTemplate", "esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol", "esri/dijit/Popup",
@@ -188,8 +197,9 @@
                     var p = new Point(d.x, d.y, new esri.SpatialReference({ "wkid": 4326 }));
                     var graphic = new Graphic(p, symbol, lang.clone(d), null);
                     customGraphics.add(graphic);
-                    avelng += d.x * Math.PI/180;
-                    avelat += d.y * Math.PI / 180;
+                    //avelng += d.x * Math.PI/180;
+                    //avelat += d.y * Math.PI / 180;
+
                     //获取最大 最小 经纬度
                     maxlng = d.x > maxlng ? d.x : maxlng;
                     minlng = d.x < minlng ? d.x : minlng;
